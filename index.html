@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Remote Control Panel</title>
+    <title>App Master Control Panel</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { background: #1e293b; border-radius: 12px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: #1e293b; border-radius: 12px; padding: 24px; width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         h2 { color: #38bdf8; text-align: center; margin-top: 0; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 14px; margin-bottom: 5px; color: #94a3b8; }
-        input[type="text"] { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; box-sizing: border-box; }
+        input[type="text"], textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; box-sizing: border-box; }
+        textarea { resize: vertical; height: 60px; }
         .status-toggle { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 10px 15px; border-radius: 6px; }
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -26,9 +27,9 @@
 <body>
 
 <div class="container">
-    <h2>App Master Control</h2>
+    <h2>App Control Panel</h2>
     
-    <!-- ১. অ্যাপ চালু বা বন্ধ করার সুইচ -->
+    <!-- ১. অ্যাপ চালু বা বন্ধ -->
     <div class="form-group status-toggle">
         <span>অ্যাপ স্ট্যাটাস (ON/OFF):</span>
         <label class="switch">
@@ -37,16 +38,31 @@
         </label>
     </div>
 
-    <!-- ২. সর্বশেষ ভার্সন -->
+    <!-- ২. বাধ্যতামূলক আপডেট -->
+    <div class="form-group status-toggle">
+        <span>বাধ্যতামূলক আপডেট (Force Update):</span>
+        <label class="switch">
+            <input type="checkbox" id="force_update">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <!-- ৩. সর্বশেষ ভার্সন -->
     <div class="form-group">
         <label>সর্বশেষ আপডেট ভার্সন:</label>
         <input type="text" id="app_version" value="1.0.0">
     </div>
 
-    <!-- ৩. APK ডাউনলোড লিংক -->
+    <!-- ৪. APK ডাউনলোড লিংক -->
     <div class="form-group">
         <label>APK ডাউনলোড লিংক:</label>
-        <input type="text" id="apk_link" placeholder="এখানে সরাসরি APK লিংক দিন">
+        <input type="text" id="apk_link" placeholder="ডাউনলোড লিংক দিন">
+    </div>
+
+    <!-- ৫. এডমিন পপ-আপ মেসেজ -->
+    <div class="form-group">
+        <label>এডমিন পপ-আপ নোটিশ/মেসেজ:</label>
+        <textarea id="popup_msg" placeholder="অ্যাপে দেখানোর জন্য নোটিশ লিখুন"></textarea>
     </div>
 
     <button onclick="saveConfig()">সেটিংস সেভ করুন</button>
@@ -54,30 +70,28 @@
 </div>
 
 <script>
-    // পেজ লোড হলে আগের সেভ করা ডেটা দেখাবে
     window.onload = function() {
-        if(localStorage.getItem('app_active') !== null) {
-            document.getElementById('app_status').checked = (localStorage.getItem('app_active') === 'true');
-        }
-        if(localStorage.getItem('app_version')) {
-            document.getElementById('app_version').value = localStorage.getItem('app_version');
-        }
-        if(localStorage.getItem('apk_link')) {
-            document.getElementById('apk_link').value = localStorage.getItem('apk_link');
+        if(localStorage.getItem('config')) {
+            let cfg = JSON.parse(localStorage.getItem('config'));
+            document.getElementById('app_status').checked = cfg.app_active;
+            document.getElementById('force_update').checked = cfg.force_update;
+            document.getElementById('app_version').value = cfg.version;
+            document.getElementById('apk_link').value = cfg.apk_url;
+            document.getElementById('popup_msg').value = cfg.popup_message;
         }
     }
 
     function saveConfig() {
-        var isActive = document.getElementById('app_status').checked;
-        var version = document.getElementById('app_version').value;
-        var link = document.getElementById('apk_link').value;
+        let config = {
+            app_active: document.getElementById('app_status').checked,
+            force_update: document.getElementById('force_update').checked,
+            version: document.getElementById('app_version').value,
+            apk_url: document.getElementById('apk_link').value,
+            popup_message: document.getElementById('popup_msg').value
+        };
 
-        // ব্রাউজারে সেভ করা (যা অ্যাপ রিড করবে)
-        localStorage.setItem('app_active', isActive);
-        localStorage.setItem('app_version', version);
-        localStorage.setItem('apk_link', link);
-
-        document.getElementById('msg').innerText = 'রিমোট সেটিংস সফলভাবে আপডেট হয়েছে!';
+        localStorage.setItem('config', JSON.stringify(config));
+        document.getElementById('msg').innerText = 'সেটিংস সফলভাবে সেভ হয়েছে!';
     }
 </script>
 
