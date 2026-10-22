@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Admin Control Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; text-align: center; padding: 20px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 10px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h2 { color: #00e676; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #333; background: #2a2a2a; color: #fff; text-align: center; }
+        button { width: 95%; padding: 12px; background: #00e676; border: none; font-weight: bold; color: #000; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #00c853; }
+        #status { margin-top: 15px; font-weight: bold; color: #ffeb3b; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>App Control Panel</h2>
+        <p>এখান থেকে অ্যাপের ডাটা পরিবর্তন করুন:</p>
+        
+        <label>অ্যাপ পাসওয়ার্ড:</label><br>
+        <input type="text" id="app_pass" value="123456"><br>
+        
+        <label>সিস্টেম আপডেট ভার্সন:</label><br>
+        <input type="text" id="app_version" value="1.0.0"><br>
+        
+        <button onclick="saveData()">সেভ করুন</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function saveData() {
+            let pass = document.getElementById('app_pass').value;
+            let ver = document.getElementById('app_version').value;
+            
+            // ডেটা ব্রাউজারে সেভ রাখা
+            localStorage.setItem('app_pass', pass);
+            localStorage.setItem('app_version', ver);
+            
+            document.getElementById('status').innerText = 'ডাটা সফলভাবে সেভ হয়েছে!';
+        }
+
+        // আগে সেভ করা ডেটা লোড করা
+        window.onload = function() {
+            if(localStorage.getItem('app_pass')) {
+                document.getElementById('app_pass').value = localStorage.getItem('app_pass');
+            }
+            if(localStorage.getItem('app_version')) {
+                document.getElementById('app_version').value = localStorage.getItem('app_version');
+            }
+        }
+    </script>
+</body>
+</html>
