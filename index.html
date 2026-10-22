@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Master Control</title>
+    <title>App Remote Control Panel</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { background: #1e293b; border-radius: 12px; padding: 24px; width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .lock-header { text-align: right; margin-bottom: 10px; }
-        .lock-icon { font-size: 14px; opacity: 0.3; cursor: pointer; user-select: none; }
-        .lock-icon:hover { opacity: 0.8; }
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { background: #1e293b; border-radius: 12px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         h2 { color: #38bdf8; text-align: center; margin-top: 0; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 14px; margin-bottom: 5px; color: #94a3b8; }
-        input[type="text"], input[type="password"], input[type="file"] { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; box-sizing: border-box; }
+        input[type="text"] { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; box-sizing: border-box; }
         .status-toggle { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 10px 15px; border-radius: 6px; }
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -23,107 +20,64 @@
         input:checked + .slider:before { transform: translateX(22px); }
         button { width: 100%; padding: 12px; background: #38bdf8; color: #0f172a; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
         button:hover { background: #0284c7; color: white; }
-        #login-sec { display: none; background: #0f172a; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #334155; }
-        #admin-panel { display: block; }
         .msg { text-align: center; font-size: 13px; color: #4ade80; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- ছোট ও ঝাপসা লক আইকন -->
-    <div class="lock-header">
-        <span class="lock-icon" onclick="toggleLogin()">🔒 Admin Login</span>
+    <h2>App Master Control</h2>
+    
+    <!-- ১. অ্যাপ চালু বা বন্ধ করার সুইচ -->
+    <div class="form-group status-toggle">
+        <span>অ্যাপ স্ট্যাটাস (ON/OFF):</span>
+        <label class="switch">
+            <input type="checkbox" id="app_status" checked>
+            <span class="slider"></span>
+        </label>
     </div>
 
-    <!-- গোপন লগইন সেকশন -->
-    <div id="login-sec">
-        <h4 style="margin-top:0; text-align:center;">অ্যাডমিন লগইন</h4>
-        <input type="text" id="admin_user" placeholder="ইউজারনেম"><br><br>
-        <input type="password" id="admin_pass" placeholder="পাসওয়ার্ড"><br>
-        <button onclick="login()">প্রবেশ করুন</button>
+    <!-- ২. সর্বশেষ ভার্সন -->
+    <div class="form-group">
+        <label>সর্বশেষ আপডেট ভার্সন:</label>
+        <input type="text" id="app_version" value="1.0.0">
     </div>
 
-    <!-- মূল অ্যাডমিন প্যানেল -->
-    <div id="admin-panel">
-        <h2>App Master Control</h2>
-        
-        <!-- ১. অ্যাপ চালু বা বন্ধ করার সুইচ -->
-        <div class="form-group status-toggle">
-            <span>অ্যাপ অবস্থা (ON/OFF):</span>
-            <label class="switch">
-                <input type="checkbox" id="app_status" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <!-- ২. নতুন ভার্সন ও ফাইল লিংক -->
-        <div class="form-group">
-            <label>সর্বশেষ আপডেট ভার্সন:</label>
-            <input type="text" id="app_version" value="1.0.0">
-        </div>
-
-        <div class="form-group">
-            <label>আপডেট APK ফাইল ডাউনলোড লিংক:</label>
-            <input type="text" id="apk_link" placeholder="https://example.com/app.apk">
-        </div>
-
-        <!-- ৩. ফাইল আপলোড অপশন (ফ্রি গিটহাব স্টোরেজ) -->
-        <div class="form-group">
-            <label>নতুন APK ফাইল নির্বাচন করুন (Optional):</label>
-            <input type="file" id="apk_file">
-        </div>
-
-        <!-- ৪. অ্যাডমিন পাসওয়ার্ড পরিবর্তন -->
-        <div class="form-group">
-            <label>নতুন অ্যাডমিন পাসওয়ার্ড:</label>
-            <input type="password" id="new_admin_pass" placeholder="নতুন পাসওয়ার্ড লিখুন">
-        </div>
-
-        <button onclick="saveSettings()">সেটিং সেভ করুন</button>
-        <div class="msg" id="msg"></div>
+    <!-- ৩. APK ডাউনলোড লিংক -->
+    <div class="form-group">
+        <label>APK ডাউনলোড লিংক:</label>
+        <input type="text" id="apk_link" placeholder="এখানে সরাসরি APK লিংক দিন">
     </div>
+
+    <button onclick="saveConfig()">সেটিংস সেভ করুন</button>
+    <div class="msg" id="msg"></div>
 </div>
 
 <script>
-    function toggleLogin() {
-        var sec = document.getElementById('login-sec');
-        sec.style.display = (sec.style.display === 'block') ? 'none' : 'block';
-    }
-
-    function login() {
-        var user = document.getElementById('admin_user').value;
-        var pass = document.getElementById('admin_pass').value;
-        var savedPass = localStorage.getItem('admin_pass') || 'admin123';
-
-        if(user === 'admin' && pass === savedPass) {
-            alert('লগইন সফল হয়েছে!');
-            document.getElementById('login-sec').style.display = 'none';
-        } else {
-            alert('ভুল ইউজারনেম বা পাসওয়ার্ড!');
+    // পেজ লোড হলে আগের সেভ করা ডেটা দেখাবে
+    window.onload = function() {
+        if(localStorage.getItem('app_active') !== null) {
+            document.getElementById('app_status').checked = (localStorage.getItem('app_active') === 'true');
+        }
+        if(localStorage.getItem('app_version')) {
+            document.getElementById('app_version').value = localStorage.getItem('app_version');
+        }
+        if(localStorage.getItem('apk_link')) {
+            document.getElementById('apk_link').value = localStorage.getItem('apk_link');
         }
     }
 
-    function saveSettings() {
-        var isOnline = document.getElementById('app_status').checked;
-        var ver = document.getElementById('app_version').value;
+    function saveConfig() {
+        var isActive = document.getElementById('app_status').checked;
+        var version = document.getElementById('app_version').value;
         var link = document.getElementById('apk_link').value;
-        var newPass = document.getElementById('new_admin_pass').value;
 
-        if(newPass) {
-            localStorage.setItem('admin_pass', newPass);
-        }
+        // ব্রাউজারে সেভ করা (যা অ্যাপ রিড করবে)
+        localStorage.setItem('app_active', isActive);
+        localStorage.setItem('app_version', version);
+        localStorage.setItem('apk_link', link);
 
-        var config = {
-            app_active: isOnline,
-            version: ver,
-            download_url: link
-        };
-
-        // ডাটা ব্রাউজারে রিসিভ রাখার জন্য
-        localStorage.setItem('app_config', JSON.stringify(config));
-        
-        document.getElementById('msg').innerText = 'সব তথ্য সফলভাবে আপডেট হয়েছে!';
+        document.getElementById('msg').innerText = 'রিমোট সেটিংস সফলভাবে আপডেট হয়েছে!';
     }
 </script>
 
