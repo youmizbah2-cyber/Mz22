@@ -33,7 +33,7 @@
     <div class="form-group status-toggle">
         <span>অ্যাপ স্ট্যাটাস (ON/OFF):</span>
         <label class="switch">
-            <input type="checkbox" id="app_status" checked>
+            <input type="checkbox" id="app_status">
             <span class="slider"></span>
         </label>
     </div>
@@ -50,10 +50,10 @@
     <!-- ৩. সর্বশেষ ভার্সন -->
     <div class="form-group">
         <label>সর্বশেষ আপডেট ভার্সন:</label>
-        <input type="text" id="app_version" value="1.0.0">
+        <input type="text" id="app_version">
     </div>
 
-    <!-- ৪. APK ডাউনলোড লিংক -->
+    <!-- ۴. APK ডাউনলোড লিংক -->
     <div class="form-group">
         <label>APK ডাউনলোড লিংক:</label>
         <input type="text" id="apk_link" placeholder="ডাউনলোড লিংক দিন">
@@ -70,18 +70,27 @@
 </div>
 
 <script>
-    window.onload = function() {
-        if(localStorage.getItem('config')) {
-            let cfg = JSON.parse(localStorage.getItem('config'));
-            document.getElementById('app_status').checked = cfg.app_active;
-            document.getElementById('force_update').checked = cfg.force_update;
-            document.getElementById('app_version').value = cfg.version;
-            document.getElementById('apk_link').value = cfg.apk_url;
-            document.getElementById('popup_msg').value = cfg.popup_message;
+    // আপনার npoint.io থেকে পাওয়া API লিংকটি নিচে বসাবেন
+    const API_URL = "https://api.npoint.io/আপনার_বিন_আইডি_এখানে_দিন";
+
+    // পেজ ওপেন হলে অনলাইন থেকে ডাটা লোড করবে
+    window.onload = async function() {
+        try {
+            let response = await fetch(API_URL);
+            let data = await response.json();
+            
+            document.getElementById('app_status').checked = data.app_active;
+            document.getElementById('force_update').checked = data.force_update;
+            document.getElementById('app_version').value = data.version;
+            document.getElementById('apk_link').value = data.apk_url;
+            document.getElementById('popup_msg').value = data.popup_message;
+        } catch (error) {
+            console.error("ডাটা লোড করতে সমস্যা হয়েছে:", error);
         }
     }
 
-    function saveConfig() {
+    // সেভ বাটনে ক্লিক করলে অনলাইনে ডাটা সেভ হয়ে যাবে
+    async function saveConfig() {
         let config = {
             app_active: document.getElementById('app_status').checked,
             force_update: document.getElementById('force_update').checked,
@@ -90,8 +99,23 @@
             popup_message: document.getElementById('popup_msg').value
         };
 
-        localStorage.setItem('config', JSON.stringify(config));
-        document.getElementById('msg').innerText = 'সেটিংস সফলভাবে সেভ হয়েছে!';
+        try {
+            let response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            });
+
+            if(response.ok) {
+                document.getElementById('msg').innerText = 'অনলাইনে সেটিংস সফলভাবে সেভ হয়েছে!';
+            } else {
+                document.getElementById('msg').innerText = 'সেভ করতে সমস্যা হয়েছে!';
+            }
+        } catch (error) {
+            document.getElementById('msg').innerText = 'নেটওয়ার্ক ত্রুটি!';
+        }
     }
 </script>
 
