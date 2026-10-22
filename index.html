@@ -70,7 +70,6 @@
 </div>
 
 <script>
-    // আপনার দেওয়া npoint.io লিংকটি এখানে যুক্ত করা আছে
     const API_URL = "https://api.npoint.io/1f047744132664e77340";
 
     // পেজ ওপেন হলে অনলাইন থেকে ডাটা লোড করবে
@@ -89,7 +88,7 @@
         }
     }
 
-    // সেভ বাটনে ক্লিক করলে অনলাইনে ডাটা সেভ হয়ে যাবে
+    // সেভ বাটনে ক্লিক করলে অনলাইনে PUT মেথডের মাধ্যমে ডাটা সেভ হয়ে যাবে
     async function saveConfig() {
         let config = {
             app_active: document.getElementById('app_status').checked,
@@ -101,7 +100,7 @@
 
         try {
             let response = await fetch(API_URL, {
-                method: 'POST',
+                method: 'PUT', // এখানে POST এর পরিবর্তে PUT করা হয়েছে
                 headers: {
                     'Content-Type': 'application/json'
                 },
